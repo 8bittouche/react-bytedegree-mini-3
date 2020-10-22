@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getComments } from '../store/modules/comments';
+import { getCommentsByPage } from '../store/modules/comments';
 
 const Comment = styled.div`
   padding: 7px 10px;
@@ -37,14 +37,7 @@ const Button = styled.div`
   }
 `;
 
-function CommentList() {
-  const { comments } = useSelector((state) => state.comments);
-  const dispatch = useDispatch();
-  
-  useEffect(() => {
-    dispatch(getComments());
-  }, [dispatch]);
-
+function CommentList({ comments }) {
   return comments.map((comment, key) => (
     <Comment key={key}>
       <img src={comment.profile_url} alt="" />

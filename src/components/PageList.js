@@ -1,9 +1,11 @@
 import React from 'react';
-import styled from "styled-components";
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { getCommentsByPage } from '../store/modules/comments';
 
 const PageListStyle = styled.div`
-  margin-bottom : 20px;
-  text-align : center;
+  margin-bottom: 20px;
+  text-align: center;
 `;
 
 const Page = styled.button`
@@ -12,28 +14,42 @@ const Page = styled.button`
   font-size: 1rem;
   line-height: 1.5;
   border: 1px solid lightgray;
-  ${({ active }) => active && `
+  ${({ active }) =>
+    active &&
+    `
         background: gray;
         color: #fff;
   `}
   margin-right: 3px;
-  
 `;
 
+function PageList() {
+  const {
+    limit,
+    commentsAll: { comments },
+  } = useSelector((state) => state.comments);
+  const dispatch = useDispatch();
 
-function PageList(){
-    
-    const pageArray = [];
-    
+  const pageArray = [];
+  const pageCnt =
+    comments.length % limit === 0
+      ? comments.length / limit
+      : comments.length / limit + 1;
+
+  const onClick = (e) => {
+    const page = e.target.innerText;
+    dispatch(getCommentsByPage(page, limit));
+  };
+
+  for (let i = 1; i <= pageCnt; i++) {
     pageArray.push(
-        // 임시로 페이지 하나만 설정했습니다.
-        <Page key="1">
-            1
-        </Page>
+      <Page key={i} onClick={onClick}>
+        {i}
+      </Page>
     );
-    
+  }
 
-    return <PageListStyle>{pageArray}</PageListStyle>
+  return <PageListStyle>{pageArray}</PageListStyle>;
 }
 
 export default PageList;
