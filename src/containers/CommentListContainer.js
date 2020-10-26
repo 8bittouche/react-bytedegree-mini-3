@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CommentList from '../components/CommentList';
-import { getComments, getCommentsByPage } from '../store/modules/comments';
+import { getCommentsByPage } from '../store/modules/comments';
 
 function CommentListContainer() {
   const {
-    page, limit,
+    page,
+    limit,
     commentsPage: { comments },
   } = useSelector((state) => state.comments);
   const dispatch = useDispatch();

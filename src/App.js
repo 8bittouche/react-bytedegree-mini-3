@@ -5,21 +5,29 @@ import FormContainer from './containers/FormContainer';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { getComments } from './store/modules/comments';
+import styled from 'styled-components';
 
-function App(){
-    const dispatch = useDispatch();
-    
-    useEffect(() => {
-      dispatch(getComments());
-    }, [dispatch]);
+const ContainerWrapper = styled.div`
+  width: 1000px;
+  border: 1px gray solid;
+  border-radius: 10px;
+  margin: 0 auto;
+`;
 
-    return (
-      <div>
-          <CommentListContainer />
-          <PageListContainer />
-          <FormContainer />
-      </div>
-    )
+function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getComments());
+  }, [dispatch]);
+
+  return (
+    <ContainerWrapper>
+      <CommentListContainer />
+      <PageListContainer />
+      <FormContainer />
+    </ContainerWrapper>
+  );
 }
 
 export default App;
