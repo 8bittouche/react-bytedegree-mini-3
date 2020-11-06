@@ -1,10 +1,5 @@
 import React from 'react';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import useInputs from '../hooks/useInputs';
-import { getCommentsByPage } from '../store/modules/comments';
-import { addComment, modifyComment } from '../store/modules/comments';
 
 const FormStyle = styled.div`
   & > form {
@@ -32,52 +27,8 @@ const FormStyle = styled.div`
   }
 `;
 
-function Form() {
-  const { page, limit, modifyOn, currentComment } = useSelector(
-    (state) => state.comments
-  );
-  const dispatch = useDispatch();
-  const [inputs, setInputs, onChange] = useInputs();
+function Form({ inputs, onChange, onSubmit }) {
   const { profile_url, author, content, createdAt } = inputs;
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    const comment = {
-      profile_url,
-      author,
-      content,
-      createdAt,
-    };
-
-    if (modifyOn) {
-      dispatch(modifyComment(currentComment.id, comment)).then(() =>
-        dispatch(getCommentsByPage(page, limit))
-      );
-    } else {
-      dispatch(addComment(comment)).then(() =>
-        dispatch(getCommentsByPage(1, limit))
-      );
-    }
-
-    setInputs({
-      profile_url: '',
-      author: '',
-      content: '',
-      createdAt: '',
-    });
-  };
-
-  useEffect(() => {
-    if (modifyOn) {
-      setInputs({
-        profile_url: currentComment.profile_url,
-        author: currentComment.author,
-        content: currentComment.content,
-        createdAt: currentComment.createdAt,
-      });
-    }
-  }, [modifyOn, currentComment, setInputs]);
 
   return (
     <FormStyle>

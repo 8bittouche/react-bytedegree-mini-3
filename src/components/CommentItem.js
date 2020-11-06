@@ -1,7 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { deleteComment, getCommentsByPage } from '../store/modules/comments';
 
 const Comment = styled.div`
   padding: 7px 10px;
@@ -37,24 +35,8 @@ const Button = styled.div`
   }
 `;
 
-function CommentItem({ comment }) {
-  const { limit } = useSelector((state) => state.comments);
-  const dispatch = useDispatch();
+function CommentItem({ comment, onSetForm, onRemove }) {
   const { id, profile_url, author, createdAt, content } = comment;
-
-  const onSet = () => {
-    dispatch({ type: 'SET_MODIFY_COMMENT', comment });
-  };
-
-  const onRemove = () => {
-    if (window.confirm('정말 삭제하시겠습니까?') === true) {
-      dispatch(deleteComment(id)).then(() =>
-        dispatch(getCommentsByPage(1, limit))
-      );
-    } else {
-      return;
-    }
-  };
 
   return (
     <Comment key={comment.id}>
@@ -67,8 +49,8 @@ function CommentItem({ comment }) {
       <Content>{content}</Content>
 
       <Button>
-        <a onClick={onSet}>수정</a>
-        <a onClick={onRemove}>삭제</a>
+        <a onClick={() => onSetForm(comment)}>수정</a>
+        <a onClick={() => {if (window.confirm('삭제하시겠습니까?')) onRemove(id)}}>삭제</a>
       </Button>
 
       <hr />

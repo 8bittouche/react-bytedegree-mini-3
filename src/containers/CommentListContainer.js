@@ -1,21 +1,36 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CommentList from '../components/CommentList';
-import { getCommentsByPage } from '../store/modules/comments';
+import { deleteComment, getCommentsByPage } from '../store/modules/comments';
 
 function CommentListContainer() {
   const {
     page,
-    limit,
     commentsPage: { comments },
   } = useSelector((state) => state.comments);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getCommentsByPage(page, limit));
-  }, [dispatch, page, limit]);
+    dispatch(getCommentsByPage(page));
+  }, [dispatch, page]);
 
-  return <CommentList comments={comments} />;
+  const onSetForm = (comment) => {
+    dispatch({ type: 'MODIFY_ON_COMMENT', comment });
+  };
+
+  const onRemove = (id) => {
+    dispatch(deleteComment(id)).then(() =>
+      dispatch({ type: 'SET_PAGE', page: 1 })
+    );
+  };
+
+  return (
+    <CommentList
+      comments={comments}
+      onSetForm={onSetForm}
+      onRemove={onRemove}
+    />
+  );
 }
 
 export default CommentListContainer;

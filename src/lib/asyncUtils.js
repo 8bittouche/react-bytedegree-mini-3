@@ -2,23 +2,23 @@ import { addComment, deleteComment, modifyComment } from '../api/comments';
 
 export const getCommentsThunk = (type, promiseCreator) => {
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
-  return (page, limit) => async (dispatch) => {
+  return (page) => async (dispatch) => {
     dispatch({ type });
 
     try {
-      const payload = await promiseCreator(page, limit);
+      const payload = await promiseCreator(page);
       dispatch({ type: SUCCESS, payload, page });
     } catch (e) {
       dispatch({ type: ERROR, payload: e, error: true });
+      return new Error('Axios Error (GET COMMENTS)');
     }
   };
 };
 
-export const addCommentThunk = (type) => {
-  return (comment) => async (dispatch) => {
+export const addCommentThunk = () => {
+  return (comment) => async () => {
     try {
       await addComment(comment);
-      dispatch({ type, comment });
     } catch (e) {
       return new Error('Axios Error (ADD COMMENT)');
     }
@@ -29,18 +29,17 @@ export const modifyCommentThunk = (type) => {
   return (id, comment) => async (dispatch) => {
     try {
       await modifyComment(id, comment);
-      dispatch({ type, modifiedId: id, comment });
+      dispatch({ type });
     } catch (e) {
       return new Error('Axios Error (MODIFY COMMENT)');
     }
   };
 };
 
-export const deleteCommentThunk = (type) => {
-  return (id) => async (dispatch) => {
+export const deleteCommentThunk = () => {
+  return (id) => async () => {
     try {
       await deleteComment(id);
-      dispatch({ type, removeId: id });
     } catch (e) {
       return new Error('Axios Error (DELETE COMMENT)');
     }
@@ -81,29 +80,29 @@ export const reducerUtils = {
   }),
 };
 
-export const handleAsyncActions = (type, key, keepData=false) => {
+export const handleAsyncActions = (type, key, keepData = false) => {
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
 
   return (state, action) => {
-      switch(action.type) {
-          case type:
-              return {
-                  ...state,
-                  [key] : reducerUtils.loading(keepData ? state[key].comments : []),
-              }
-          case SUCCESS:
-              return {
-                  ...state,
-                  page: action.page ? action.page : state.page,
-                  [key]: reducerUtils.success(action.payload)
-              }
-          case ERROR:
-              return {
-                  ...state,
-                  [key] : reducerUtils.error(action.payload)
-              }
-          default: 
-              return state;
-      }
-  }
-}
+    switch (action.type) {
+      case type:
+        return {
+          ...state,
+          [key]: reducerUtils.loading(keepData ? state[key].comments : []),
+        };
+      case SUCCESS:
+        return {
+          ...state,
+          page: action.page ? action.page : state.page,
+          [key]: reducerUtils.success(action.payload),
+        };
+      case ERROR:
+        return {
+          ...state,
+          [key]: reducerUtils.error(action.payload),
+        };
+      default:
+        return state;
+    }
+  };
+};

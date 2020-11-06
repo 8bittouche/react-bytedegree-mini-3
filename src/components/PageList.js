@@ -1,7 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getCommentsByPage } from '../store/modules/comments';
 
 const PageListStyle = styled.div`
   margin-bottom: 20px;
@@ -23,27 +21,17 @@ const Page = styled.button`
   margin-right: 3px;
 `;
 
-function PageList() {
-  const {
-    limit,
-    commentsAll: { comments },
-  } = useSelector((state) => state.comments);
-  const dispatch = useDispatch();
-
+function PageList({ total_cnt, page, getCurrentPage }) {
   const pageArray = [];
-  const pageCnt =
-    comments.length % limit === 0
-      ? comments.length / limit
-      : comments.length / limit + 1;
-
-  const onClick = (e) => {
-    const page = e.target.innerText;
-    dispatch(getCommentsByPage(page, limit));
-  };
+  const pageCnt = Math.ceil(total_cnt / 5);
 
   for (let i = 1; i <= pageCnt; i++) {
     pageArray.push(
-      <Page key={i} onClick={onClick}>
+      <Page
+        key={i}
+        onClick={(e) => getCurrentPage(`${i}`)}
+        active={parseInt(page) === i ? true : false}
+      >
         {i}
       </Page>
     );
